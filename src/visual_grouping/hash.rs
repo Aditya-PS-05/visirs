@@ -39,3 +39,50 @@ pub fn resize_for_comparison(
 
     resize.to_rgba8()
 }
+
+pub fn generate_perceptual_hash<P: AsRef<Path>>(image_path: P) -> Result<Vec<u8>> {
+    let img = img_hash_image::open(image_path.as_ref()).context("Failed to open image")?;
+
+    let resized = resize_for_comparison(&img);
+
+    let dynamic_img = img_hash_image::DynamicImage::ImageRgba8(resized);
+
+    let hasher = HasherConfig::new()
+        .hash_alg(HashAlg::Blockhash)
+        .hash_size(8, 8)
+        .to_hasher();
+
+    let hash = hasher.hash_image(&dynamic_img);
+
+    Ok(hash.as_bytes().to_vec())
+}
+
+pub fn hamming_distance(hash1: &[u8], hash2: &[u8]) -> Result<u32> {
+    if hash1.len() != hash2.len() {
+        anyhow::bail!("Hashes must be the same length");
+    }
+    let mut distance = 0u32;
+    for (byte1, byte2) in hash1.iter().zip(hash2.iter()) {
+        let xor = byte1 ^ byte2;
+
+        distance += xor.count_ones();
+    }
+
+    Ok(distance)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_hamming_distance() {
+        let hash1 = vec![0b11110000, 0b10101010];
+        let hash2 = vec![0b11110000, 0b10101010];
+        assert_eq!(hamming_distance(&hash1, &hash2).unwrap(), 0);
+
+        let hash3 = vec![0b11110000, 0b00000000];
+        let hash4 = vec![0b00001111, 0b11111111];
+        assert_eq!(hamming_distance(&hash3, &hash4).unwrap(), 16);
+    }
+}
