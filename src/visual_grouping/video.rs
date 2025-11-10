@@ -1,6 +1,6 @@
 use anyhow::{Context, Result};
 use ffmpeg_next as ffmpeg;
-use image::{GenericImageView, save_buffer};
+use image::{save_buffer, GenericImageView};
 use std::path::Path;
 use tempfile::TempDir;
 
@@ -172,7 +172,7 @@ pub fn extract_frames_from_video<P: AsRef<Path>>(
 
     println!("Successfully extracted {} frames", frame_paths.len());
 
-    Ok(vec!["".to_string()])
+    Ok(frame_paths)
 }
 
 /// Save a video frame as PNG

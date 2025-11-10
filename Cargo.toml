@@ -8,4 +8,7 @@ anyhow = "1.0.100"
 ffmpeg-next = "8.0.0"
 image = "0.25.8"
 img_hash = "3.2.0"
+serde = "1.0.228"
 tempfile = "3.23.0"
+uuid = { version = "1.11", features = ["v4"] }
+regex = "1.11"
