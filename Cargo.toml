@@ -12,3 +12,5 @@ serde = "1.0.228"
 tempfile = "3.23.0"
 uuid = { version = "1.11", features = ["v4"] }
 regex = "1.11"
+napi-derive = "3.3.3"
+napi = "3.5.2"
